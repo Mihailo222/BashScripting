@@ -1,0 +1,50 @@
+Zombie Processes Clearer Script
+-------------------------------
+
+* Zombie Process = a leftover bits of dead process that haven't been cleared up properly.
+* A program that creates a zombie process isn't programmed properly.
+* Zombie process can't be killed because it's already dead.
+
+* How does the process die on Linux?
+
+When a process dies on Linux, it isn't all removed from memoryimmediately - it's process descriptor stays in memory (it takes a tiny amount of memory). 
+The status of that process becomes EXIT_ZOMBIE and the process's parent is notified that it's child process has died (with SIGCHLD signal). After this 
+signal, the parent needs to call wait() function and in that state parent process is getting information from the dead process. After wait() cal, the 
+zombie process is removed from memory. 
+
+But what if parent process is not programmed properly and never calls wait() - then it's zombie children will stick around in memory until someone 
+clear them up!
+
+* Danger of Zombie Processes?
+
+Zombie processes don't use up any system resources ( only a tiny amount of sys memory to store its process descriptor). The problem is that this
+ process uses free PID. Linux system have a number of process IDs - 32767 by default on 32-bit systems.
+
+
+*How to get rid of Zombie Process?
+
+A) We can't kill a Zombie Process. We need to send the SIGCHILD signal to parent process - it's like we send this signal to a parent process instead of
+ a child process. It is a signal to parent to execute the wait() system call and clean up the zombie children. 
+
+We send this to a parent process: kill -s SIGCHLD pid, where pid is a pid of a parent process.
+
+
+B) If parent process isn't programmed properly and is ignoring SIGCHLD signal, this won't help. Then we need to kill or close a zombie's parent process.
+ When the parent process that created zombie ends, init inherits the zombie processes and becomes their parent. When As init is the first process created 
+ on Linux systems, it is a parent of all processes and it executes wait() sys call periodically to clean up its zombies.
+
+
+
+The termination status of a process includes information about how the process terminated, such as whether it exited normally or was terminated by a signal, 
+as well as the exit code returned by the process. When a child process terminates, it sends an exit status to its parent process. This exit status contains 
+information about how the child process terminated. 
+
+ Our project
+ -----------
+
+ Program generates a zombi process. After fork() system call when child and parent are generated, 
+ program prints a child PID and then we put a parent in wait state for a certain amount of seconds
+ and it is the period of time when zombie exists. So, there is a zombie because when a child process
+terminates, it becomes a zombie process if the parent process does not call wait() or waitpid() to
+ retrieve its termination status. So our parent does not know anything about child's termination for a certain
+ amount of time and that is why the zombie process is created.
