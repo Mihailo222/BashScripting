@@ -26,7 +26,8 @@ Zombie processes don't use up any system resources ( only a tiny amount of sys m
 A) We can't kill a Zombie Process. We need to send the SIGCHILD signal to parent process - it's like we send this signal to a parent process instead of
  a child process. It is a signal to parent to execute the wait() system call and clean up the zombie children. 
 
-We send this to a parent process: kill -s SIGCHLD pid, where pid is a pid of a parent process.
+We send this to a parent process: kill -s SIGCHLD pid, where pid is a pid of a parent process. So this solution didn't work out fine, because parent process
+ignored our SIGCHLD signal and we realzied we should try a plan B.
 
 
 B) If parent process isn't programmed properly and is ignoring SIGCHLD signal, this won't help. Then we need to kill or close a zombie's parent process.
@@ -42,9 +43,7 @@ information about how the child process terminated.
  Our project
  -----------
 
- Program generates a zombi process. After fork() system call when child and parent are generated, 
- program prints a child PID and then we put a parent in wait state for a certain amount of seconds
- and it is the period of time when zombie exists. So, there is a zombie because when a child process
-terminates, it becomes a zombie process if the parent process does not call wait() or waitpid() to
- retrieve its termination status. So our parent does not know anything about child's termination for a certain
- amount of time and that is why the zombie process is created.
+ Program generates a zombi process. After fork() system call when child and parent are generated, program prints a child PID and then we put a parent in wait state
+ for a certain amount of seconds and it is the period of time when zombie exists. So, there is a zombie because when a child process terminates, it becomes a zombie
+ process if the parent process does not call wait() or waitpid() to retrieve its termination status. So our parent does not know anything about child's termination 
+ for a certain amount of time and that is why the zombie process is created.
