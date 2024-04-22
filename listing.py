@@ -8,7 +8,6 @@ def list_all_files(folder):
         return None, "Folder %s do not exist:" % (folder)
     except PermissionError:
         return None, "Wrong premissions"
-    
 
 def main():
 
