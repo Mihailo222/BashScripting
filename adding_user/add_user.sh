@@ -11,7 +11,7 @@ fi
 #inut parameter is username
 if [ $# -ne 2 ]
 then
- echo "Usage: $0 <username> <ssh_group_name>"
+ echo "Usage: $0 <username> <ssh_group_name>" 1>&2
  exit 1
 fi
 
