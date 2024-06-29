@@ -16,7 +16,6 @@ fi
 
 username=$1 
 groupname=$2 
-ssh_file="/etc/ssh/sshd_config"
 
 
 #add new  group
