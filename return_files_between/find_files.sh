@@ -1,21 +1,16 @@
-#! /bin/bash
+#!/bin/bash
 
-#user input: FROM date - TO date
-#find files made by users on operating system between FROM date and TO date and write them to a file.
-
-if [ $# -ne 2 ]
+if [ $# -ne 5 ]
 then
- echo "Usage: $0 <YYYY-MM-DD> <YYYY-MM-DD>"
- exit 1
+ echo "Usage: $0 <YYYY-MM-DD> <YYYY-MM-DD> <directory> <user> <group>"
 fi
 
 from_date=$1
 to_date=$2
+dir=$3
+user=$4
+group=$5
+touch results
 
-file_created="FILE WHERE YOU WANT TO STORE FILTERED FILE NAMES AND INFOS IN"
-dir_searched="DIRECTORY YOU WANT TO SEARCH FILES IN"
-touch $file_created
-
-i=0
-files=()
-find $dir_searched -type f -newermt $from_date ! -newermt $to_date -exec ls -lh {} \; >> $file_created
+find $dir -type f -newermt $from_date ! -newermt $to_date -exec chown $user:$group {} \; #changing ownership of all files without changing ownership of their folder
+find $dir -type f -newermt $from_date ! -newermt $to_date -exec ls -lh {} \; >> results
